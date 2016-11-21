@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<title>{{serverName}} - pySymProxy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+
+.updateflash {
+  -moz-animation: updateflash 1s ease-out;
+  -moz-animation-iteration-count: 1;
+
+  -webkit-animation: updateflash 1s ease-out;
+  -webkit-animation-iteration-count: 1;
+
+  -ms-animation: flash 1s updateflash-out;
+  -ms-animation-iteration-count: 1;
+}
+
+@-webkit-keyframes updateflash {
+    0% { background-color:none;}
+    50% { background-color:#cccccc;}
+    100% {background-color:none;}
+}
+
+@-moz-keyframes updateflash {
+    0% { background-color:none;}
+    50% { background-color:#cccccc;}
+    100% {background-color:none;}
+}
+
+@-ms-keyframes updateflash {
+    0% { background-color:none;}
+    50% { background-color:#cccccc;}
+    100% {background-color:none;}
+}
+</style>
+<body class="w3-light-grey">
+
+<!-- Top container -->
+<div class="w3-container w3-top w3-black w3-large w3-padding" style="z-index:4">
+  <span class="w3-left">{{serverName}}</span>
+  <span class="w3-right">pySymProxy</span>
+</div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-top:43px;">
+
+  <!-- Header -->
+  <header class="w3-container" style="padding-top:22px">
+    <div class="w3-row-padding w3-margin-bottom">
+    <div class="w3-col s3">
+      <div class="w3-container w3-blue w3-padding-8">
+        <div class="w3-left"><i class="material-icons w3-xxxlarge">visibility</i></div>
+        <div class="w3-right">
+          <h2 id="stats_numRequests">{{statistics.numRequests.value}}</h2>
+        </div>
+        <div class="w3-clear"></div>
+        <h4>Total requests</h4>
+      </div>
+    </div>
+    <div class="w3-col s2">
+      <div class="w3-container w3-blue w3-padding-8">
+        <div class="w3-left"><i class="material-icons w3-xxxlarge">check_circle</i></div>
+        <div class="w3-right">
+          <h2 id="stats_percentSuccess">{{'%d' % (statistics.numSuccess.value * 100 / (statistics.numRequests.value if statistics.numRequests.value != 0 else 1))}}%</h2>
+        </div>
+        <div class="w3-clear"></div>
+        <h4>Successful requests</h4>
+      </div>
+    </div>
+    <div class="w3-col s2">
+      <div class="w3-container w3-blue w3-padding-8">
+        <div class="w3-left"><i class="material-icons w3-xxxlarge">flash_on</i></div>
+        <div class="w3-right">
+          <h2 id="stats_percentCacheHit">{{'%d' % (statistics.numCacheHit.value * 100 / (statistics.numRequests.value if statistics.numRequests.value != 0 else 1))}}%</h2>
+        </div>
+        <div class="w3-clear"></div>
+        <h4>Cache hits</h4>
+      </div>
+    </div>
+    <div class="w3-col s2">
+      <div class="w3-container w3-blue w3-padding-8">
+        <div class="w3-left"><i class="material-icons w3-xxxlarge">insert_drive_file</i></div>
+        <div class="w3-right">
+          <h2 id="stats_numSymbols">{{statistics.numSymbols.value}}</h2>
+        </div>
+        <div class="w3-clear"></div>
+        <h4>Symbols served</h4>
+      </div>
+    </div>
+    <div class="w3-col s3">
+      <div class="w3-container w3-blue w3-text-white w3-padding-8">
+        <div class="w3-left"><i class="material-icons w3-xxxlarge">folder</i></div>
+        <div class="w3-right">
+          <h2 id="stats_diskUsageMB">{{'%d' % (diskUsage/1024/1024)}} MB</h2>
+        </div>
+        <div class="w3-clear"></div>
+        <h4>Storage</h4>
+      </div>
+    </div>
+  </div>
+  </header>
+
+  <div class="w3-container">
+
+  <div class="w3-container w3-padding-8">
+    <div class="w3-card-4">
+      <header class="w3-container w3-indigo">
+        <div class="w3-display-container">
+          <h4>Configuration</h4>
+          <div class="w3-display-right"><a href="pysymproxy.json">Download config</a></div>
+        </div>
+      </header>
+
+      <table class="w3-table" style="white-space: nowrap;">
+        <tr><th>Client configuration</th><td style="width: 100%;">_NT_SYMBOL_PATH={{config.identity.default_sympath}}</td></tr>
+        <tr><th>Cache location</th><td>{{config.general.cacheLocation}}</td></tr>
+        <tr><th>Statistics enabled</th><td>{{config.general.enableStatistics}}</td></tr>
+        <tr onclick="expandServerAccordion('general_blacklist')" class="w3-hover-grey"><th>Blacklist</th><td><i>Click to expand/collapse</i></td></tr>
+        <tr id="general_blacklist" class="w3-leftbar w3-hide"><td></td>
+          <td>
+            {% for pattern in config.general.blacklist %}
+              <p class="w3-padding-0 w3-margin-0">{{pattern}}</p>
+            {% endfor %}
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="w3-container w3-padding-8">
+    <div class="w3-card-4">
+      <header class="w3-container w3-indigo">
+        <h4>Upstream servers</h4>
+      </header>
+      <table class="w3-table w3-hoverable w3-bordered">
+          {% for server in servers %}
+        <tr onclick="expandServerAccordion('server_{{server.name}}')"><th>
+           {{server.name}}
+        </th></tr>
+        <tr id="server_{{server.name}}" class="w3-leftbar w3-hide w3-border-indigo">
+          <td class="w3-padding-0">
+          <table class="w3-table" style="white-space: nowrap;">
+            <tr><th>Remote URL</th><td style="width: 100%;">{{server.remote}}</td></tr>
+            <tr><th>Cache location</th><td>{{server.cacheLocation}}</td></tr>
+            <tr><th>Retry timeout</th><td>{{server.retryTimeout}}</td></tr>
+            <tr><th>Maximum requests</th><td>{{server.maxRequests}}</td></tr>
+            <tr><th>whitelist</th>
+              <td>
+                {% for pattern in server.whitelist %}
+                  <p class="w3-padding-0 w3-margin-0">{{pattern}}</p>
+                {% endfor %}
+              </td>
+            </tr>
+            <tr><th>blacklist</th>
+              <td>
+                {% for pattern in server.blacklist %}
+                  <p class="w3-padding-0 w3-margin-0">{{pattern}}</p>
+                {% endfor %}
+              </td>
+            </tr>
+          </table>
+          </td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <div class="w3-container w3-padding-8">
+    <div class="w3-card-4">
+      <header class="w3-container w3-indigo">
+        <h4>Symbols</h4>
+      </header>
+
+      <table class="w3-table w3-striped w3-white w3-hoverable">
+        <thead class="w3-light-grey">
+          <th onclick="clickSortField('file')">Symbol</th>
+          <th onclick="clickSortField('numRequests')">Requests</th>
+          <th onclick="clickSortField('numSuccess')">Successful requests</th>
+          <th onclick="clickSortField('numCacheHit')">Cache hits</th>
+          <th onclick="clickSortField('numPending')">Pending</th>
+          <th onclick="clickSortField('totalTimeServicing')">Total time</th>
+          <th onclick="clickSortField('lastAccessTime')">Last access</th>
+        </thead>
+
+        <tbody id="symbol_table"></tbody>
+      </table>
+      <div class="w3-hide">
+        <table class="w3-table w3-striped w3-white w3-hoverable">
+          <tr id="symbol_row_template">
+            <td id="entry_file"></td>
+            <td id="entry_numRequests"></td>
+            <td id="entry_numSuccess"></td>
+            <td id="entry_numCacheHit"></td>
+            <td id="entry_numPending"></td>
+            <td id="entry_totalTimeServicing"></td>
+            <td id="entry_lastAccessTime"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+
+    <div class="w3-container w3-padding-8">
+    <div class="w3-card-4">
+      <header class="w3-container w3-indigo">
+        <h4>Log files</h4>
+      </header>
+
+      <div class="w3-container">
+        {% for logfile in logfiles %}
+          <div class="w3-col s1">
+            <div class="w3-container">
+            <p><a href="{{ loop.index }}.log">Log {{ loop.index }}</a></p>
+              </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    </div>
+
+    <div class="w3-container w3-padding-8">
+    <div class="w3-card-4">
+      <header class="w3-container w3-indigo">
+        <h4>About</h4>
+      </header>
+
+      <div class="w3-container">
+        <p>Administrator: {{config.identity.administrator}}</p>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  <!-- End page content -->
+</div>
+
+<!-- Footer -->
+<div class="w3-container">
+  <footer class="w3-container w3-light-grey">
+    <div class="w3-right">
+      <p>Powered by <a href="http://www.github.com/inbilla/pysymproxy">pySymProxy</a>, w3.css, waitress, falcon, python</p>
+    </div>
+  </footer>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+function expandServerAccordion(id)
+{
+  var x = document.getElementById(id);
+  if (x.className.indexOf("w3-hide") == -1)
+  {
+    x.className += " w3-hide";
+  }
+  else
+  {
+    x.className = x.className.replace(" w3-hide", "");
+  }
+}
+
+function newSymbolRow()
+{
+  template = $("#symbol_row_template");
+  row = template.clone();
+  $("#symbol_table").append(row);
+  return row;
+}
+
+function updateJsonData(url, callback, updateRate)
+{
+  $.getJSON(url, function(data, status){
+    callback(data, status);
+
+    if (updateRate != 0)
+    {
+      setTimeout(function(){
+        updateJsonData(url, callback, updateRate);
+      }, updateRate);
+    }
+  });
+}
+
+function updateStats(data)
+{
+  $("#stats_numRequests").text(data.numRequests);
+  $("#stats_percentSuccess").text(Math.round(data.numSuccess * 100/ Math.max(1, data.numRequests)) + "%");
+  $("#stats_percentCacheHit").text(Math.round(data.numCacheHit * 100/ Math.max(1, data.numRequests)) + "%");
+  $("#stats_numSymbols").text(data.numSymbols);
+  $("#stats_diskUsageMB").text(Math.round(data.diskUsage / 1024 / 1024) + "MB");
+}
+
+symbolTableEntries = {};
+
+$.fn.animateHighlight = function() {
+  var element = this;
+  $(element).addClass("updateflash");
+  setTimeout(function(){$(element).removeClass("updateflash");}, 1000);
+};
+
+function updateSymbolEntry(data)
+{
+  var changed = false;
+  var currentEntry = symbolTableEntries[data.file];
+  if (currentEntry == null)
+  {
+    currentEntry = {};
+    currentEntry.file = data.file;
+    currentEntry.element = newSymbolRow();
+    $(currentEntry.element).attr("id","symbol_"+data.file);
+    $(currentEntry.element).find("#entry_file").text(data.file);
+
+    symbolTableEntries[data.file] = currentEntry;
+    changed = true;
+  }
+
+  // Update the values of the current entry
+  if (currentEntry.numRequests != data.numRequests)
+  {
+    $(currentEntry.element).find("#entry_numRequests").text(data.numRequests);
+    currentEntry.numRequests = data.numRequests;
+    changed = true;
+  }
+  if (currentEntry.numPending != data.numPending)
+  {
+    $(currentEntry.element).find("#entry_numPending").text(data.numPending);
+    currentEntry.numPending = data.numPending;
+    changed = true;
+  }
+  if (currentEntry.numCacheHit != data.numCacheHit)
+  {
+    text = data.numCacheHit + " (" + Math.round(data.numCacheHit * 100/ Math.max(1, data.numRequests)) + "%)";
+    $(currentEntry.element).find("#entry_numCacheHit").text(text);
+    currentEntry.numCacheHit = data.numCacheHit;
+    changed = true;
+  }
+  if (currentEntry.numSuccess != data.numSuccess)
+  {
+    text = data.numSuccess + " (" + Math.round(data.numSuccess * 100/ Math.max(1, data.numRequests)) + "%)";
+    $(currentEntry.element).find("#entry_numSuccess").text(text);
+    currentEntry.numSuccess = data.numSuccess;
+    changed = true;
+  }
+  if (currentEntry.totalTimeServicing != data.totalTimeServicing)
+  {
+    text = Math.round(data.totalTimeServicing) + "s";
+    $(currentEntry.element).find("#entry_totalTimeServicing").text(text);
+    currentEntry.totalTimeServicing = data.totalTimeServicing;
+    changed = true;
+  }
+  if (currentEntry.lastAccessTime != data.lastAccessTime)
+  {
+    var d = new Date(data.lastAccessTime * 1000);
+    text = d.toLocaleString();
+    $(currentEntry.element).find("#entry_lastAccessTime").text(text);
+    currentEntry.lastAccessTime = data.lastAccessTime;
+    changed = true;
+  }
+
+  if (changed)
+  {
+    $(currentEntry.element).animateHighlight();
+  }
+}
+
+sortField = "file";
+sortAscending = true;
+
+function symbolSortFunction(a,b)
+{
+  var inversion = sortAscending ? 1 : -1;
+  if (a[sortField] < b[sortField])
+    return 1 * inversion;
+  if (a[sortField] > b[sortField])
+    return -1 * inversion;
+  return 0;
+}
+
+function clickSortField(field)
+{
+  if (sortField == field)
+  {
+    sortAscending = !sortAscending;
+  }
+  else
+  {
+    sortAscending = true;
+  }
+  sortField = field;
+
+  updateSymbolSorting();
+}
+
+function updateSymbolSorting()
+{
+  var values = Object.keys(symbolTableEntries).map(function(key){
+      return symbolTableEntries[key];
+  });
+
+  // Sort the values
+  values.sort(symbolSortFunction);
+
+  // Now order them in the document
+  var lastEntry = null;
+  for (var entryId in values)
+  {
+    var entry = values[entryId];
+    if (lastEntry == null)
+    {
+      $("#symbol_table").prepend(entry.element);
+    }
+    else
+    {
+      $(entry.element).insertAfter(lastEntry.element);
+    }
+
+    lastEntry = entry;
+  }
+}
+
+function updateSymbols(data)
+{
+  for (var entry in data)
+  {
+    updateSymbolEntry(data[entry]);
+  }
+
+  updateSymbolSorting();
+}
+
+function updateConfig(data)
+{
+
+}
+
+$(document).ready(function(){
+  // build symbol list and request stats
+  updateJsonData("symbols.json", updateSymbols, 5*60*1000); // Update every 5 mins
+  updateJsonData("statistics.json", updateStats, 30*1000); // Update every 30 seconds
+
+  // No need to update config.json much at all
+  // updateJsonData("config.json", updateConfig, 0);
+});
+
+</script>
+
+</body>
+</html>
+

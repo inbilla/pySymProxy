@@ -1,0 +1,59 @@
+{
+  "identity": {
+    "name": "PySymProxy - Default configuration",
+    "host": "localhost",
+    "administrator": "!enter your contact details!",
+    "default_sympath": "srv*c:\\symbols*http://localhost:8080/symbols"
+  },
+  "general": {
+    "enableStatistics": true,
+    "cacheLocation": "./data/symbols",
+    "blacklist": []
+  },
+  "servers": [
+    {
+      "name": "My builds",
+      "remote": "\\\\build-server\\symbols",
+      "maxRequests": 10
+    },
+    {
+      "name": "Microsoft symbol server",
+      "remote": "http://msdl.microsoft.com/download/symbols",
+      "cacheLocation": "\\\\build-server\\mssymbols",
+      "retryTimout": 600,
+      "maxRequests": 10
+    }
+  ],
+  "logging":{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+      "console": {
+        "level": "DEBUG",
+        "format": "%(asctime)s [%(thread)s][%(levelname)s][%(module)s] %(message)s",
+        "datefmt": "%m/%d/%Y %I:%M:%S %p"
+      }
+    },
+    "handlers":{
+      "console":{
+        "class" : "logging.StreamHandler",
+        "formatter" : "console",
+        "level" : "DEBUG"
+      },
+      "file":{
+        "class" : "logging.handlers.RotatingFileHandler",
+        "filename" : "./data/log.txt",
+        "maxBytes" : 524288,
+        "backupCount" : 10,
+        "formatter" : "console",
+        "level" : "DEBUG"
+      }
+    },
+    "loggers": {
+        "": {
+          "handlers": ["console", "file"],
+          "level" : "DEBUG"
+        }
+    }
+  }
+}

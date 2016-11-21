@@ -1,0 +1,4 @@
+falcon
+requests
+waitress
+jinja2
