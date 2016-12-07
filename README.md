@@ -9,6 +9,7 @@ See the following links for information on symbols and symbol servers
   - [Symbol Server and Symbol Stores](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680693(v=vs.85).aspx)
   - [SymProxy](https://msdn.microsoft.com/en-us/library/windows/hardware/ff558846(v=vs.85).aspx)
   - [Symbols the Microsoft way](https://randomascii.wordpress.com/2013/03/09/symbols-the-microsoft-way/)  
+
 ---
 ## Features
 | Feature | Microsoft SymProxy | pySymProxy | Description |
