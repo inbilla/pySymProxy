@@ -115,6 +115,17 @@ When initially attempting an implementation I tried to get a symproxy working us
 This server implementation just serves symbols. It can serve them from a local network share, so the recommended practice here is to "store" your built symbols on a local network share as you normally would. Then configure the server to serve the symbols stored at this location.
 
 ---
+## Technologies used
+- [Python](https://www.python.org/)
+- [Falcon](https://falconframework.org/)
+- [Waitress](http://docs.pylonsproject.org/projects/waitress/en/latest/)
+- [Jinja2](http://jinja.pocoo.org/)
+- [jQuery](https://jquery.com/)
+- [w3-css](http://www.w3schools.com/w3css/)
+- [Google Material Icons](https://material.io/icons/)
+- [Debuging Tools for Windows](https://developer.microsoft.com/en-us/windows/hardware/windows-driver-kit)
+
+---
 ## Disclaimer
 Use at your own risk.
 This is the first time I've written a webservice or used python for more than a small script.
