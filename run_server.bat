@@ -1,3 +1,4 @@
+@echo off
 set CURPATH=%~dp0
 echo %CURPATH%
 pushd %CURPATH%
