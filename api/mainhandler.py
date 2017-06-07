@@ -83,6 +83,7 @@ class MainHandler:
         stats = self._statistics.getStats()
         stats.diskUsage = 0  # sum([getFolderSize(server.get("cacheLocation", None)) for server in self._config.servers()])
         stats.diskUsage += getFolderSize(self._config.cacheLocation())
+        stats.numAcceptedRequests = stats.numRequests.value - stats.numExcluded.value
 
         resp.data = JsonEncoder().encode(stats)
         resp.content_type = "json"

@@ -12,10 +12,12 @@ class Statistics:
     def __init__(self, config):
         self._statistics = BlankObject()
         self._statistics.numRequests = requeststatistics.AtomicCounter()
+        self._statistics.numInvalidRequests = requeststatistics.AtomicCounter()
         self._statistics.numSuccess = requeststatistics.AtomicCounter()
         self._statistics.numSymbols = requeststatistics.AtomicCounter()
         self._statistics.numCacheHit = requeststatistics.AtomicCounter()
         self._statistics.numPending = requeststatistics.AtomicCounter()
+        self._statistics.numExcluded = requeststatistics.AtomicCounter()
         self._statistics.symbols = {}
         self._pending = {}
         self._enabled = config.findConfigValue("general.enableStatistics", required=False, default=True)
@@ -39,20 +41,27 @@ class Statistics:
         self._statistics.numPending.increment()
         stats.numRequests.increment()
         stats.numPending.increment()
-        stats.lastAccessTime.assign(time.time())
 
         return (stats, time.time())
 
-    def endRequest(self, statrecord, file, identifier, location, cachehit):
+    def endRequest(self, statrecord, file, identifier, location, cachehit, exclusion, valid, servers_attempted):
         if not self._enabled:
             return
 
         stats = statrecord[0]
-        beginTime = statrecord[1]
-
-        stats.totalTimeServicing.increment(time.time()-beginTime)
         stats.numPending.decrement()
         self._statistics.numPending.decrement()
+
+        if not valid:
+            self._statistics.numInvalidRequests.increment()
+            self._statistics.numRequests.decrement()
+            stats.numRequests.decrement()
+            return
+
+        beginTime = statrecord[1]
+        currentTime = time.time()
+        stats.totalTimeServicing.increment(currentTime - beginTime)
+        stats.lastAccessTime.assign(currentTime)
 
         if (location):
             stats.numSuccess.increment()
@@ -65,6 +74,16 @@ class Statistics:
             self._statistics.numCacheHit.increment()
         else:
             stats.numCacheMiss.increment()
+
+        if (exclusion):
+            self._statistics.numExcluded.increment()
+            stats.numExcluded.increment()
+
+        for server in servers_attempted:
+            if server[1]:
+                stats.recordServerHit(server[0])
+            else:
+                stats.recordServerMiss(server[0])
 
     def getStats(self):
         if not self._enabled:

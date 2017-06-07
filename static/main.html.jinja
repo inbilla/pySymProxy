@@ -51,11 +51,11 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
     <div class="w3-row-padding w3-margin-bottom">
-    <div class="w3-col s3">
+    <div class="w3-col s2">
       <div class="w3-container w3-blue w3-padding-8">
         <div class="w3-left"><i class="material-icons w3-xxxlarge">visibility</i></div>
         <div class="w3-right">
-          <h2 id="stats_numRequests">{{statistics.numRequests.value}}</h2>
+          <h2 id="stats_numRequests"></h2>
         </div>
         <div class="w3-clear"></div>
         <h4>Total requests</h4>
@@ -63,9 +63,19 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     </div>
     <div class="w3-col s2">
       <div class="w3-container w3-blue w3-padding-8">
+        <div class="w3-left"><i class="material-icons w3-xxxlarge">cancel</i></div>
+        <div class="w3-right">
+          <h2 id="stats_numExcluded"></h2>
+        </div>
+        <div class="w3-clear"></div>
+        <h4>Excluded requests</h4>
+      </div>
+    </div>
+    <div class="w3-col s2">
+      <div class="w3-container w3-blue w3-padding-8">
         <div class="w3-left"><i class="material-icons w3-xxxlarge">check_circle</i></div>
         <div class="w3-right">
-          <h2 id="stats_percentSuccess">{{'%d' % (statistics.numSuccess.value * 100 / (statistics.numRequests.value if statistics.numRequests.value != 0 else 1))}}%</h2>
+          <h2 id="stats_percentSuccess"></h2>
         </div>
         <div class="w3-clear"></div>
         <h4>Successful requests</h4>
@@ -75,7 +85,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <div class="w3-container w3-blue w3-padding-8">
         <div class="w3-left"><i class="material-icons w3-xxxlarge">flash_on</i></div>
         <div class="w3-right">
-          <h2 id="stats_percentCacheHit">{{'%d' % (statistics.numCacheHit.value * 100 / (statistics.numRequests.value if statistics.numRequests.value != 0 else 1))}}%</h2>
+          <h2 id="stats_percentCacheHit"></h2>
         </div>
         <div class="w3-clear"></div>
         <h4>Cache hits</h4>
@@ -85,17 +95,17 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <div class="w3-container w3-blue w3-padding-8">
         <div class="w3-left"><i class="material-icons w3-xxxlarge">insert_drive_file</i></div>
         <div class="w3-right">
-          <h2 id="stats_numSymbols">{{statistics.numSymbols.value}}</h2>
+          <h2 id="stats_numSymbols"></h2>
         </div>
         <div class="w3-clear"></div>
         <h4>Symbols served</h4>
       </div>
     </div>
-    <div class="w3-col s3">
+    <div class="w3-col s2">
       <div class="w3-container w3-blue w3-text-white w3-padding-8">
         <div class="w3-left"><i class="material-icons w3-xxxlarge">folder</i></div>
         <div class="w3-right">
-          <h2 id="stats_diskUsageMB">{{'%d' % (diskUsage/1024/1024)}} MB</h2>
+          <h2 id="stats_diskUsageMB"></h2>
         </div>
         <div class="w3-clear"></div>
         <h4>Storage</h4>
@@ -119,7 +129,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
         <tr><th>Client configuration</th><td style="width: 100%;">_NT_SYMBOL_PATH={{config.identity.default_sympath}}</td></tr>
         <tr><th>Cache location</th><td>{{config.general.cacheLocation}}</td></tr>
         <tr><th>Statistics enabled</th><td>{{config.general.enableStatistics}}</td></tr>
-        <tr onclick="expandServerAccordion('general_blacklist')" class="w3-hover-grey"><th>Blacklist</th><td><i>Click to expand/collapse</i></td></tr>
+        <tr onclick="hideShowElement('general_blacklist')" class="w3-hover-grey"><th>Blacklist</th><td><i>Click to expand/collapse</i></td></tr>
         <tr id="general_blacklist" class="w3-leftbar w3-hide"><td></td>
           <td>
             {% for pattern in config.general.blacklist %}
@@ -138,7 +148,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       </header>
       <table class="w3-table w3-hoverable w3-bordered">
           {% for server in servers %}
-        <tr onclick="expandServerAccordion('server_{{server.name}}')"><th>
+        <tr onclick="hideShowElement('server_{{server.name}}')"><th>
            {{server.name}}
         </th></tr>
         <tr id="server_{{server.name}}" class="w3-leftbar w3-hide w3-border-indigo">
@@ -169,43 +179,6 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     </div>
   </div>
 
-  <div class="w3-container w3-padding-8">
-    <div class="w3-card-4">
-      <header class="w3-container w3-indigo">
-        <h4>Symbols</h4>
-      </header>
-
-      <table class="w3-table w3-striped w3-white w3-hoverable">
-        <thead class="w3-light-grey">
-          <th onclick="clickSortField('file')">Symbol</th>
-          <th onclick="clickSortField('numRequests')">Requests</th>
-          <th onclick="clickSortField('numSuccess')">Successful requests</th>
-          <th onclick="clickSortField('numCacheHit')">Cache hits</th>
-          <th onclick="clickSortField('numPending')">Pending</th>
-          <th onclick="clickSortField('totalTimeServicing')">Total time</th>
-          <th onclick="clickSortField('lastAccessTime')">Last access</th>
-        </thead>
-
-        <tbody id="symbol_table"></tbody>
-      </table>
-      <div class="w3-hide">
-        <table class="w3-table w3-striped w3-white w3-hoverable">
-          <tr id="symbol_row_template">
-            <td id="entry_file"></td>
-            <td id="entry_numRequests"></td>
-            <td id="entry_numSuccess"></td>
-            <td id="entry_numCacheHit"></td>
-            <td id="entry_numPending"></td>
-            <td id="entry_totalTimeServicing"></td>
-            <td id="entry_lastAccessTime"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-  </div>
-
-
-
     <div class="w3-container w3-padding-8">
     <div class="w3-card-4">
       <header class="w3-container w3-indigo">
@@ -223,6 +196,57 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       </div>
     </div>
     </div>
+
+
+  <div class="w3-container w3-padding-8">
+    <div class="w3-card-4">
+      <header class="w3-container w3-indigo">
+        <div class="w3-display-container">
+          <h4>Symbols</h4>
+          <div class="w3-display-right"><a href="javascript:hideShowClass('col-hitmiss');">Show hit/miss statistics</a></div>
+        </div>
+      </header>
+
+      <table class="w3-table w3-striped w3-white w3-hoverable">
+        <thead class="w3-light-grey">
+          <th onclick="clickSortField('file')">Symbol</th>
+          <th onclick="clickSortField('numRequests')">Requests</th>
+          <th onclick="clickSortField('numSuccess')">Successful requests</th>
+          <th onclick="clickSortField('numExcluded')">Excluded requests</th>
+          <th onclick="clickSortField('numCacheHit')">Cache hits</th>
+          <th onclick="clickSortField('numPending')">Pending</th>
+          <th onclick="clickSortField('totalTimeServicing')">Total time</th>
+          <th onclick="clickSortField('lastAccessTime')">Last access</th>
+
+          {% for server in servers %}
+            <th onclick="clickSortField('serverMiss_{{server.identifier}}')" title="Server Misses - {{server.name}}" class="col-hitmiss">M</th>
+            <th onclick="clickSortField('serverHits_{{server.identifier}}')" title="Server Hits - {{server.name}}" class="col-hitmiss">H</th>
+          {% endfor %}
+        </thead>
+
+        <tbody id="symbol_table"></tbody>
+      </table>
+      <div class="w3-hide">
+        <table class="w3-table w3-striped w3-white w3-hoverable">
+          <tr id="symbol_row_template">
+            <td id="entry_file"></td>
+            <td id="entry_numRequests"></td>
+            <td id="entry_numSuccess"></td>
+            <td id="entry_numExcluded"></td>
+            <td id="entry_numCacheHit"></td>
+            <td id="entry_numPending"></td>
+            <td id="entry_totalTimeServicing"></td>
+            <td id="entry_lastAccessTime"></td>
+            {% for server in servers %}
+              <td id="entry_serverMiss_{{server.identifier}}" title="Server Misses - {{server.name}}" class="col-hitmiss">0</td>
+              <td id="entry_serverHits_{{server.identifier}}" title="Server Hits - {{server.name}}" class="col-hitmiss">0</td>
+            {% endfor %}
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
 
     <div class="w3-container w3-padding-8">
     <div class="w3-card-4">
@@ -250,7 +274,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
-function expandServerAccordion(id)
+function hideShowElement(id)
 {
   var x = document.getElementById(id);
   if (x.className.indexOf("w3-hide") == -1)
@@ -261,6 +285,21 @@ function expandServerAccordion(id)
   {
     x.className = x.className.replace(" w3-hide", "");
   }
+}
+
+function hideShowClass(id)
+{
+  $("."+id).each(function( index ) {
+
+    if ($(this).hasClass("w3-hide"))
+    {
+      $(this).removeClass("w3-hide");
+    }
+    else
+    {
+      $(this).addClass("w3-hide");
+    }
+  });
 }
 
 function newSymbolRow()
@@ -288,8 +327,9 @@ function updateJsonData(url, callback, updateRate)
 function updateStats(data)
 {
   $("#stats_numRequests").text(data.numRequests);
-  $("#stats_percentSuccess").text(Math.round(data.numSuccess * 100/ Math.max(1, data.numRequests)) + "%");
-  $("#stats_percentCacheHit").text(Math.round(data.numCacheHit * 100/ Math.max(1, data.numRequests)) + "%");
+  $("#stats_numExcluded").text(data.numExcluded);
+  $("#stats_percentSuccess").text(Math.round(data.numSuccess * 100/ Math.max(1, data.numAcceptedRequests)) + "%");
+  $("#stats_percentCacheHit").text(Math.round(data.numCacheHit * 100/ Math.max(1, data.numAcceptedRequests)) + "%");
   $("#stats_numSymbols").text(data.numSymbols);
   $("#stats_diskUsageMB").text(Math.round(data.diskUsage / 1024 / 1024) + "MB");
 }
@@ -301,6 +341,23 @@ $.fn.animateHighlight = function() {
   $(element).addClass("updateflash");
   setTimeout(function(){$(element).removeClass("updateflash");}, 1000);
 };
+
+function updateSymbolEntryField(field, currentEntry, value, denominator)
+{
+  if (currentEntry[field] != value)
+  {
+    currentEntry[field] = value;
+
+    if (!(denominator === undefined))
+    {
+        value = value + " (" + Math.round(value * 100 / Math.max(1, denominator)) + "%)"
+    }
+    $(currentEntry.element).find("#entry_"+field).text(value);
+
+    return true;
+  }
+  return false;
+}
 
 function updateSymbolEntry(data)
 {
@@ -318,33 +375,15 @@ function updateSymbolEntry(data)
     changed = true;
   }
 
-  // Update the values of the current entry
-  if (currentEntry.numRequests != data.numRequests)
-  {
-    $(currentEntry.element).find("#entry_numRequests").text(data.numRequests);
-    currentEntry.numRequests = data.numRequests;
-    changed = true;
-  }
-  if (currentEntry.numPending != data.numPending)
-  {
-    $(currentEntry.element).find("#entry_numPending").text(data.numPending);
-    currentEntry.numPending = data.numPending;
-    changed = true;
-  }
-  if (currentEntry.numCacheHit != data.numCacheHit)
-  {
-    text = data.numCacheHit + " (" + Math.round(data.numCacheHit * 100/ Math.max(1, data.numRequests)) + "%)";
-    $(currentEntry.element).find("#entry_numCacheHit").text(text);
-    currentEntry.numCacheHit = data.numCacheHit;
-    changed = true;
-  }
-  if (currentEntry.numSuccess != data.numSuccess)
-  {
-    text = data.numSuccess + " (" + Math.round(data.numSuccess * 100/ Math.max(1, data.numRequests)) + "%)";
-    $(currentEntry.element).find("#entry_numSuccess").text(text);
-    currentEntry.numSuccess = data.numSuccess;
-    changed = true;
-  }
+  // Update the standard values of the current entry
+  changed |= updateSymbolEntryField("numRequests", currentEntry, data.numRequests);
+  changed |= updateSymbolEntryField("numPending", currentEntry, data.numPending);
+  changed |= updateSymbolEntryField("numCacheHit", currentEntry, data.numCacheHit, data.numRequests);
+  changed |= updateSymbolEntryField("numSuccess", currentEntry, data.numSuccess, data.numRequests);
+  changed |= updateSymbolEntryField("numExcluded", currentEntry, data.numExcluded, data.numRequests);
+  changed |= updateSymbolEntryField("numSuccess", currentEntry, data.numSuccess, data.numRequests);
+
+  // Update the non standard entries
   if (currentEntry.totalTimeServicing != data.totalTimeServicing)
   {
     text = Math.round(data.totalTimeServicing) + "s";
@@ -361,6 +400,20 @@ function updateSymbolEntry(data)
     changed = true;
   }
 
+  // Update the server hit/miss table
+  for (var server in data.serverMisses)
+  {
+    identifier = server
+    value = data.serverMisses[server]
+    updateSymbolEntryField("serverMiss_" + identifier, currentEntry, value);
+  }
+  for (var server in data.serverHits)
+  {
+    identifier = server
+    value = data.serverHits[server]
+    updateSymbolEntryField("serverHits_" + identifier, currentEntry, value);
+  }
+
   if (changed)
   {
     $(currentEntry.element).animateHighlight();
@@ -373,9 +426,13 @@ sortAscending = true;
 function symbolSortFunction(a,b)
 {
   var inversion = sortAscending ? 1 : -1;
-  if (a[sortField] < b[sortField])
+
+  a_val = a[sortField] || 0;
+  b_val = b[sortField] || 0;
+
+  if (a_val < b_val)
     return 1 * inversion;
-  if (a[sortField] > b[sortField])
+  if (a_val > b_val)
     return -1 * inversion;
   return 0;
 }
@@ -438,6 +495,9 @@ function updateConfig(data)
 }
 
 $(document).ready(function(){
+  // Start with symbol stats hidden
+  hideShowClass('col-hitmiss');
+
   // build symbol list and request stats
   updateJsonData("symbols.json", updateSymbols, 5*60*1000); // Update every 5 mins
   updateJsonData("statistics.json", updateStats, 30*1000); // Update every 30 seconds

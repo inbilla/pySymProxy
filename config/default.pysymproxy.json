@@ -13,11 +13,13 @@
   "servers": [
     {
       "name": "My builds",
+      "identifier": "mb",
       "remote": "\\\\build-server\\symbols",
       "maxRequests": 10
     },
     {
       "name": "Microsoft symbol server",
+      "identifier": "mss"
       "remote": "http://msdl.microsoft.com/download/symbols",
       "cacheLocation": "\\\\build-server\\mssymbols",
       "retryTimout": 600,

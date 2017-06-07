@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class SymbolServer:
     def __init__(self, globalConfig, serverConfig):
         self._name = config.findConfigValue(serverConfig, "name")
+        self._identifier = config.findConfigValue(serverConfig, "identifier", required=True)
         self._remoteURL = config.findConfigValue(serverConfig, "remote", required=True)
         self._cacheLocation = config.findConfigValue(serverConfig, "cacheLocation", default=None)
         self._retryTimeout = config.findConfigValue(serverConfig, "retryTimeout", default=60)
@@ -49,7 +50,7 @@ class SymbolServer:
         # Make sure the request is valid for this server
         if not self.filterRequest(file):
             logger.info("Find ignored - did not match filters")
-            return None, True
+            return None, True, False
 
         # Check if the symbol requested has already been requested before
         recordId = file + "/" + identifier
@@ -58,10 +59,10 @@ class SymbolServer:
             if (previousRecord.success):
                 if os.path.exists(previousRecord.location):
                     logger.info("Cache hit - success")
-                    return previousRecord.location, True
+                    return previousRecord.location, True, True
             elif (time.time() - previousRecord.timestamp < self._retryTimeout):
                 logger.info("Cache hit - rejection")
-                return None, True
+                return None, True, True
 
         # If we made it here then we need to retry the request
         # either because we haven't tried this file,
@@ -76,5 +77,7 @@ class SymbolServer:
 
         newRecord = self.SymbolRequestRecord(file, identifier, location)
         self._previousResults[recordId] = newRecord
-        return newRecord.location, False
+        return newRecord.location, False, True
 
+    def identifer(self):
+        return self._identifier

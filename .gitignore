@@ -1,3 +1,7 @@
 .idea/
 *.pyc
 data/
+*.dll
+.vs/
+*.pyproj
+*.sln
