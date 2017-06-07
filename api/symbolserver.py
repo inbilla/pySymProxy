@@ -61,7 +61,7 @@ class SymbolServer:
                     logger.info("Cache hit - success")
                     return previousRecord.location, True, True
             elif (time.time() - previousRecord.timestamp < self._retryTimeout):
-                logger.info("Cache hit - rejection")
+                logger.info("Cache hit - rejection - retry in {}s".format(self._retryTimeout - (time.time() - previousRecord.timestamp)))
                 return None, True, True
 
         # If we made it here then we need to retry the request
