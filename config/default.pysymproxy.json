@@ -19,7 +19,7 @@
     },
     {
       "name": "Microsoft symbol server",
-      "identifier": "mss"
+      "identifier": "mss",
       "remote": "http://msdl.microsoft.com/download/symbols",
       "cacheLocation": "\\\\build-server\\mssymbols",
       "retryTimout": 600,
