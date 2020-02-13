@@ -1,4 +1,4 @@
-import requeststatistics
+from . import requeststatistics
 import time
 
 

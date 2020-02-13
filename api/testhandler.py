@@ -15,5 +15,5 @@ class TestHandler:
             resp.stream_len = os.path.getsize(file_location)
             resp.content_type = "application/octet-stream"
 
-        except Exception, e:
+        except Exception as e:
             resp.body = "error: " + str(e)
