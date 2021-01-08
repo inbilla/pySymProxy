@@ -37,7 +37,7 @@ This sounded like the perfect reason to setup a SymProxy as described by the Mic
 ---
 ## Configuration
 ### Installation
-Make sure you are running windows and have Python 3 installed.
+Make sure you are running windows and have Python 2.7 or 3+ installed.
 You can clone this repository into a folder on the windows machine.
 To run the server, you can run `run_server.bat` in the root folder of the repository.
 This will run a server on the machine on port 8080.
