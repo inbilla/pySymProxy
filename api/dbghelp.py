@@ -1,3 +1,6 @@
+from __future__ import print_function
+# Import print() function for Python 2.7 compatibility
+
 import ctypes
 import ctypes.wintypes
 import os
