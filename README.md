@@ -37,7 +37,7 @@ This sounded like the perfect reason to setup a SymProxy as described by the Mic
 ---
 ## Configuration
 ### Installation
-Make sure you are running windows and have python 2.7 installed.
+Make sure you are running windows and have Python 3 installed.
 You can clone this repository into a folder on the windows machine.
 To run the server, you can run `run_server.bat` in the root folder of the repository.
 This will run a server on the machine on port 8080.
@@ -102,14 +102,14 @@ Yeah, so we're abusing the dbghelp.dll a bit here. The documentation makes no gu
 ## FAQ
 ### I use local network shares for my symbol storage. Why would I use this?
 You probably shouldn't. Local network shares are great and fast.
-However there are some useful features that may make it worth trying, such as statistics collection, and the fact that symbol server configuration is managed by the server rather than each developer's individual PC configuration.
+However, there are some useful features that may make it worth trying, such as statistics collection, and the fact that symbol server configuration is managed by the server rather than each developer's individual PC configuration.
 
 ### Microsoft has an implementation of a Symbol Proxy (symproxy), why not use that?
 Our initial attempts to configure a symproxy as per the documentation failed. Varying versions of IIS, mixed with configuration headaches and legacy installations made it unclear where the issue was. Whilst attempting to configure the server it also became clear that there were desirable configuration settings missing, and the complexity of the task that was being performed by the service wasn't very high. 
 So I thought I would give it a shot and write something that worked the way we wanted.
 
 ### Why not just use linux? Why use windows?
-When initially attempting an implementation I tried to get a symproxy working using just python. This could then have been hosted on a linux server. I ran into trouble when attempting to forward requests to the Microsoft symbol server. This server doesn't accept requests from anything but their software. So the current implementation makes use of the dbghelp.dll and symsrv.dll to build requests for other servers (just as your debugger would).
+When initially attempting an implementation, I tried to get a symproxy working using just python. This could then have been hosted on a linux server. I ran into trouble when attempting to forward requests to the Microsoft symbol server. This server doesn't accept requests from anything but their software. So the current implementation makes use of the dbghelp.dll and symsrv.dll to build requests for other servers (just as your debugger would).
 
 ### How do I store symbols on this symbol server?
 This server implementation just serves symbols. It can serve them from a local network share, so the recommended practice here is to "store" your built symbols on a local network share as you normally would. Then configure the server to serve the symbols stored at this location.
