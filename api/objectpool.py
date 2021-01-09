@@ -1,4 +1,9 @@
-import queue
+# Python 3+ has module "queue", while 2.7 has module "Queue"
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+
 from contextlib import contextmanager
 import threading
 
