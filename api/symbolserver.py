@@ -1,8 +1,8 @@
-import dbghelp
+from . import dbghelp
 import time
 import os.path
-import objectpool
-import config
+from . import objectpool
+from . import config
 import re
 import logging
 
@@ -71,7 +71,7 @@ class SymbolServer:
         try:
             with objectpool.poolObject(self._dbgHelpPool) as dbgHelp:
                 location = dbgHelp.findFile(file, identifier)
-        except Exception, e:
+        except Exception as e:
             logging.error("{}".format(str(e)))
             pass
 

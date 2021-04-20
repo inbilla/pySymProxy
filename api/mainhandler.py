@@ -30,7 +30,7 @@ def getFolderSize(folder):
             elif os.path.isdir(itempath):
                 total_size += getFolderSize(itempath)
         return total_size
-    except Exception, e:
+    except Exception as e:
         return 0
 
 class MainHandler:
@@ -52,7 +52,7 @@ class MainHandler:
                 return self.on_get_symbols(req, resp)
             elif (file.endswith(".log")):
                 return self.on_get_logfile(req, resp, file)
-        except Exception, e:
+        except Exception as e:
             resp.body = "error: " + str(e)
 
     def on_get_index(self, req, resp):

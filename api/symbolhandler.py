@@ -1,9 +1,9 @@
 import falcon
 import os
 import re
-import symbolserver
+from . import symbolserver
 import logging
-import statistics
+from . import statistics
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class SymbolHandler:
             else:
                 raise Exception("Unable to find file across the servers")
 
-        except Exception, e:
+        except Exception as e:
             logging.error("{}".format(str(e)))
             resp.body = "404 could not find requested file.\nError: " + str(e)
             resp.status = falcon.HTTP_404

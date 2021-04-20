@@ -1,8 +1,8 @@
 import falcon
-import config
-import mainhandler
-import symbolhandler
-import testhandler
+from . import config
+from . import mainhandler
+from . import symbolhandler
+from . import testhandler
 
 configFile = config.findConfigFile(
     [ '../config/pysymproxy.json'
